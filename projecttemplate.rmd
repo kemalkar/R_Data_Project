@@ -1,0 +1,1034 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+EXPLORATORY DATA ANALYSIS by Kemal Kar
+========================================================
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+
+#Loading libraries needed to run the functions.
+
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+library(dplyr)
+library(memisc)
+
+```
+
+```{r echo=FALSE, Load_the_Data}
+
+# Loading Data
+
+RedWineQuality <- read.csv('wineQualityReds.csv')
+head(RedWineQuality)
+
+```
+
+
+
+```{r echo=FALSE}
+
+# Get the names of the columns
+
+names(RedWineQuality)
+
+```
+
+# Univariate Plots Section
+
+
+```{r}
+
+summary(RedWineQuality)
+
+```
+
+
+
+```{r echo=FALSE, Univariate_Plots}
+
+#Plot the histogram for quality 
+
+qplot(x=quality, data=RedWineQuality, binwidth = 1) +
+  scale_x_continuous(breaks=seq(2,8,1)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality Histogram', x= 'Quality', y = 'Count')
+
+```
+
+```{r, message=FALSE, echo=FALSE, warning=FALSE }
+
+qplot(x=pH, data=RedWineQuality, binwidth = 0.02) +
+  scale_x_continuous(limits=c(2.9,3.7)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH Histogram', x= 'pH', y = 'Count')
+
+```
+
+```{r, echo=FALSE}
+ 
+qplot(x=fixed.acidity, data=RedWineQuality, binwidth = 0.2) +
+  scale_x_continuous(limits=c(4,14)) +
+  theme(text=element_text(size=10), 
+        plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Fixed Acidity Histogram', x= 'Fixed Acidity', y = 'Count')
+
+```
+
+```{r, echo=FALSE}
+
+qplot(x=volatile.acidity, data=RedWineQuality, binwidth = 0.02) +
+  scale_x_continuous(limits=c(0.1,1)) +
+  theme(text=element_text(size=10), 
+        plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Volatile Acidity Histogram', x= 'Volatile Acidity', y = 'Count')
+
+```
+
+```{r, echo=FALSE}
+
+summary(RedWineQuality$citric.acid)
+
+summary(log10(RedWineQuality$citric.acid+1))
+
+summary(sqrt(RedWineQuality$citric.acid))
+
+p_c1 <- qplot(x=citric.acid, data=subset(RedWineQuality, 
+                                         !is.na(citric.acid)), binwidth = 0.01) +
+  scale_x_continuous(limits=c(0,0.75)) +
+  scale_y_continuous(limits=c(0,75)) +
+  theme(text=element_text(size=10), 
+        plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Citric Acid Histogram', x= 'Citric Acid', y = 'Count')
+
+
+p_c2 <- qplot(x=log10(RedWineQuality$citric.acid+1),
+              data=RedWineQuality, binwidth = 0.01) +
+  scale_x_continuous(limits=c(0,0.3)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Log of Citric Acid Histogram', x= 'log(Citric Acid)', y = 'Count')
+
+
+p_c3 <- qplot(x=sqrt(RedWineQuality$citric.acid), 
+              data=RedWineQuality, binwidth = 0.02) +
+  scale_x_continuous(limits=c(0.2,0.8)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Sqrt of Citric Acid Histogram', x='Sqrt(Citric Acid)', y='Count')
+
+grid.arrange(p_c1,p_c2,p_c3,ncol=2)
+
+```
+
+```{r, echo=FALSE}
+
+qplot(x=residual.sugar, data=RedWineQuality, binwidth = 0.1) +
+  scale_x_continuous(limits=c(0.9,4)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Residual Sugar Histogram', x= 'Residual Sugar', y = 'Count')
+   
+```
+
+
+```{r, echo=FALSE}
+
+qplot(x=chlorides, data=RedWineQuality, binwidth = 0.003) +
+  scale_x_continuous(limits=c(0.02,0.12)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Chlorides Histogram', x= 'Chlorides', y = 'Count')
+
+```
+
+```{r, echo=FALSE}
+
+
+qplot(x=free.sulfur.dioxide, data=RedWineQuality, binwidth = 1) +
+  scale_x_continuous(limits=c(1,45)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Free Sulfur Dioxide Histogram', x='Free Sulfur Dioxide', y='Count')
+
+
+```
+
+```{r, echo=FALSE}
+
+qplot(x=total.sulfur.dioxide, data=RedWineQuality, , binwidth = 3) +
+  scale_x_continuous(limits=c(6,150)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Total Sulfur Dioxide Histogram',
+       x='Total Sulfur Dioxide', y='Count')
+
+```
+
+
+```{r, echo=FALSE}
+
+qplot(x=alcohol, data=RedWineQuality, binwidth = 0.2) +
+  scale_x_continuous(limits=c(8.4,14)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Alcohol Histogram', x= 'Alcohol', y = 'Count')
+
+```
+
+# Univariate Analysis
+
+> **Tip**: Now that you've completed your univariate explorations, it's time to
+reflect on and summarize what you've found. Use the questions below to help you
+gather your observations and add your own if you have other thoughts!
+
+### What is the structure of your dataset?
+
+Quality is the response variable in the dataset. The histogram displays that 
+it is in normal distribution.
+
+The explanatory variables in this dataset are quantitative. Some of them are 
+explored in univariate plots:
+
+1. pH, fixed and volatile acidity, residual sugar and chlorides values are also
+in normal distribution, similar to quality values.
+
+2. Alcohol, total and free sulfur dioxide histograms are right skewed. 
+
+### What is/are the main feature(s) of interest in your dataset?
+
+Quality of the wine is a result of sulfur, acidity, sugar and chloride variables.
+Throughout the analysis below, I will assess the correlation between the quality
+and these variables.
+
+### What other features in the dataset do you think will help support your \
+
+Quality and the 1st group of variables above are in normal distribution. I will 
+test whether this similarity in distribution means there is  strong correlation 
+between these variables and the resultant quality.
+
+pH value can be a resultant value of fixed, volalite acidity and citric acid 
+variables. I will assess whether there is a relationship between these variables and pH value.
+
+Total and free sulfur dioxide distibutions are very similarly right skewed. 
+I will also check whether these 2 variables are strongly corelated. 
+
+### Did you create any new variables from existing variables in the dataset?
+
+At first check, no new variables are created.
+
+### Of the features you investigated, were there any unusual distributions? \
+
+Throughout the histograms, I removed the long tails of some of the variables by
+cutting from the 1st and 3rd quadrants so that I could focus on the main 
+distribution omitting the outliers.
+
+Citric acid values seem to be distributed throughout the histogram plot. 
+I checked the log and sqrt distributions if there could be a gaussian 
+distribution hidden. 
+
+
+# Bivariate Plots Section
+
+In this section, The correlation between different explanatory variables and the
+resultant variable, quality.
+
+Let's start with creating a heatmap which displays the correlations between 
+different variables. 
+
+```{r, echo=FALSE}
+
+ggcorr(data=RedWineQuality) +  theme(text=element_text(size=8))
+
+```
+
+In the heatmap, the following correlations can be observed:
+1. In higher quality wines, the alcohol , sulphates and citric acid is found more.
+There is a positive relationship between quality and these variables.
+2. Volatile acidity is found less in hihger quality wines where as citric acid 
+increases. 
+3. pH value of the wine is negatively correlated to fixed acidity and citric acid
+and positively correlated with volatile acidity.
+4. Fixed acidity is very strongly correlated to citric acid and density of the 
+wine.
+5. Total and free sulfur dioxide is strongly correlated with each other.
+
+As a second step, I will make a detailed analysis of these correlations in below 
+chapters.
+
+
+
+## The relationship between pH and Quality:
+
+```{r, echo=FALSE}
+
+RedWineQuality$quality.factor <- as.factor(RedWineQuality$quality)
+
+ggplot(aes(x=quality.factor, y= pH), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Quality', x= 'Quality', y = 'pH')
+
+```
+
+Inspecting the boxplots for each quality level, it can be observed that pH 
+value is slightly decreasing while the quality of wine increases.
+
+Contrary to my expectation, there is a weak correlation between the pH value and
+the quality. In the prior research about wine quality, it is said that pH value
+is important for the quality of wine.
+
+## The relationship between Fixed Acidity and Quality:
+
+```{r, echo = FALSE}
+
+ggplot(aes(x=quality.factor, y= fixed.acidity), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Fixed Acidity vs Quality', x= 'Quality', y = 'Fixed Acidity')
+
+
+```
+
+In general positive correlation is observed between Quality and Fixed Acidity. 
+Fixed acidity in the wine increases in higher quality wines. However, there is
+not a continuous increase as fixed acidity values are nearly same in quality 3
+and 8 wine samples. 
+
+## The relationship between Volatile Acidity and Quality:
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= log(volatile.acidity+1)), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Volatile Acidity vs Quality', x= 'Quality', 
+       y = 'log(Volatile Acidity')
+
+#The strongest correlation between quality and log(volatile acidity)
+
+```
+
+There is very strong negative relationship between the volatile acidity and the
+quality of the wine. As the quality increases, the volatile acidity is sharply
+decreasing.
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= citric.acid), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Citric Acid vs Quality', x= 'Quality', y = 'Citric Acidity')
+
+```
+
+There is a positive relationship between the quality and citric acid value of
+wine. 
+
+Throughout the assessment of relationship between quality and acidity variables,
+it is observed that the most strong relationship is between volatile acidity and
+quality. In order to make better understandable visual analysis, I decided to 
+use Volatile Acidity as the acidity variable.
+
+
+## The relationship between Chloride and Quality:
+
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= chlorides), data=RedWineQuality) +
+  ylim(0,0.2) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Chlorides vs Quality', x= 'Quality', y = 'chlorides')
+
+#correlation between 1/chloride
+
+```
+
+A very weak negative relationship is found between the quality of wine and the chlorides
+level in it. 
+
+Please note that in order to display the ditribution of chlorides, y scale is 
+limited to exclude far outliers.
+
+
+## The relationship between Total sulfur Dioxide and Quality:
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= total.sulfur.dioxide), data=RedWineQuality) +
+  geom_jitter() +
+  ylim(0,180) +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Total Sulfur Dioxide', y= 'total sulfur dioxide',
+       x = 'Quality')
+
+
+```
+
+There seems a weak negative linear relationship between total sulfur dioxide 
+and quality. The total sulfur dioxide is not chaging strongly between different
+quality levels.
+
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= free.sulfur.dioxide), data=RedWineQuality) +
+  geom_jitter() +
+  ylim(0,60) +
+  geom_boxplot(aes(alpha=0.05))+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Free Sulfur Dioxide', y= 'free sulfur dioxide',
+       x = 'Quality')
+
+
+```
+
+
+The same situation with the total sulfur dioxide is observed also with the 
+free sulfur dioxide. There is a weak corelation between the sulfur dioxide
+levels and the quality.
+
+It can also be said that the number of samples in quality levels 3,4 and 5 are
+very low compared to 5,6 and 7. It would be a good idea to analyse the 
+relationship between (total and free) sulfur dioxide and quality by adding more
+samples with quality levels 3, 4 and 8.
+
+Another observation from the heatmap and the last 2 plots above, total and free
+sulfur dioxide levels are correlated. Note that the change pattern against 
+quality are very similar.
+
+Let's make another analysis to see total and free sulfur dioxide correlation
+explicitly:
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=free.sulfur.dioxide,y=total.sulfur.dioxide), data=RedWineQuality)+
+  xlim(1, quantile(RedWineQuality$free.sulfur.dioxide, 0.95)) +
+  ylim(6, quantile(RedWineQuality$total.sulfur.dioxide, 0.95)) +
+  geom_jitter() +
+  geom_smooth(method='lm',color='blue') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Total vs Free Sulfur Dioxide', x= 'Free Sulfur Dioxide', y = 'Total Sulfur Dioxide')
+  
+
+```
+
+It is observed that total and free sulfur dioxide levels in wine samples are
+in strong positive correlation. This finding also coincides with the analysis
+of quality vs total and free sulfur dioxide variables.
+
+
+## The relationship between Alcohol and Quality:
+
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= alcohol), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Alcohol', x= 'quality',
+       y = 'Alcohol')
+
+```
+
+There is a strong relatipnship between the alcohol level and quality of the wine.
+We can see lower (than expected) alcohol (mean and median) values for quality 
+level 5.
+
+
+## The relationship between Sulphate and Quality:
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=quality.factor, y= sulphates), data=RedWineQuality) +
+  geom_jitter() +
+  geom_boxplot()+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Sulphate', y= 'Sulphate',
+       x = 'Quality')
+
+```
+
+
+The quality of the wine is positively affected by sulphate level inside. 
+
+
+## The relationship between Fixed Acidity, Volatile acidity, Citric Acid and Quality:
+
+##1. The relationship between pH and Fixed Acidity
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=fixed.acidity,y=pH),data=RedWineQuality) +
+  geom_jitter() +
+  xlim(4.6, quantile(RedWineQuality$fixed.acidity, 0.95)) +
+  ylim(2.74, quantile(RedWineQuality$pH, 0.95)) +
+  geom_smooth(method='lm', color = 'red') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Fixed Acidity', x= 'Fixed Acidity', y = 'pH')
+
+```
+
+There is a strong negative correlation between pH and fixed acidity. As the 
+fixed acidity increases, the pH value decreases steadily. 
+
+
+##2. The relationship between pH and Volatile Acidity
+ 
+
+```{r, echo=FALSE}
+
+q1 <- ggplot(aes(x=volatile.acidity,y=pH),data=RedWineQuality) +
+  geom_jitter() +
+  xlim(0.12, quantile(RedWineQuality$volatile.acidity, 0.95)) +
+  ylim(2.74, quantile(RedWineQuality$pH, 0.95)) +
+  geom_smooth(method='lm', color = 'blue') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Volatile Acidity', x= 'Volatile Acidity', y = 'pH')
+
+q2 <- ggplot(aes(x=volatile.acidity,y=sqrt(pH)),data=RedWineQuality) +  
+  geom_jitter() +
+  xlim(0.12, quantile(RedWineQuality$volatile.acidity, 0.95)) +
+  geom_smooth(method='lm', color = 'blue') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='sqrt(pH) vs Volatile Acidity', x= 'Volatile Acidity', y = 'pH')
+
+q3 <- ggplot(aes(x=volatile.acidity,y=log10(pH)),data=RedWineQuality) +  
+  geom_jitter() +
+  xlim(0.12, quantile(RedWineQuality$volatile.acidity, 0.95)) +
+  geom_smooth(method='lm', color = 'blue') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='log(pH) vs Volatile Acidity', x= 'Volatile Acidity', y = 'pH')
+
+grid.arrange(q1,q2,q3, ncol=2)
+
+```
+
+pH and volatile acidity are in positive correlation. I tried to check if there is
+a stronger relations exist between different transformation of pH an volatile
+acidity. However, there seems no important difference between trials.
+
+##3. The relationship between Volatile and Fixed Acidity
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=fixed.acidity,y=volatile.acidity),data=RedWineQuality) +
+  geom_jitter() +
+  xlim(4.6, quantile(RedWineQuality$fixed.acidity, 0.95)) +
+  ylim(0.12, quantile(RedWineQuality$volatile.acidity, 0.95)) +
+  geom_smooth(method='lm', color = 'red') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Volatile vs Fixed Acidity', x= 'Fixed Acidity', y = 'Volatile Acidity')
+
+```
+
+There is a weak negative correlation between Volatile and Fixed Acidity levels.
+
+
+##4. The relationship between pH and Citric Acid
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=citric.acid,y=pH),data=RedWineQuality) +
+  xlim(0, quantile(RedWineQuality$citric.acid, 0.95)) +
+  ylim(2.74, quantile(RedWineQuality$pH, 0.95)) +
+  geom_jitter()+
+  geom_smooth(method='lm', color = 'red') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Citric Acid', x= 'Citric Acid', y = 'pH')
+
+
+```
+
+There is a negative relationship between pH value and citric acid. The pH value
+decreases as the citric acid increases. 
+
+The relationship between the 2 values can be visibly observed in the plot easily.
+
+##5. The relationship between pH and Total Sulfur Dioxide
+
+```{r, echo=FALSE}
+
+ggplot(aes(x=total.sulfur.dioxide,y=pH),data=RedWineQuality) +
+  xlim(6, quantile(RedWineQuality$total.sulfur.dioxide, 0.95)) +
+  ylim(2.74, quantile(RedWineQuality$pH, 0.95)) +
+  geom_jitter()+
+  geom_smooth(method='lm', color = 'red') +
+  theme(text=element_text(size=10), plot.title=element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Total Sulfur Dioxide', x= 'Total Sulfur Dioxide', y = 'pH')
+  
+```
+
+There is no relationship between the pH value and total sulfur dioxide. Since 
+sulfur may be related to affect the pH of solvent in chemistry, I suspected of 
+a relationship. However, pH value is independent from total sulfur dioxide.
+
+
+
+# Bivariate Analysis
+
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. How did the feature(s) of interest vary with other features in \
+the dataset?
+
+The response variable quality is positively correlated with fixed acidity, 
+citric acid and alcohol. In higher quality wines, alcohol an fixed acid is 
+found more.
+
+On the other hand, the quality of the wine decreases when volatile acid, 
+chloride and total sulfur dioxide increases in the wine. There is also a weak
+negative correlation between pH and the quality of the wine. We can say that
+high quality wines have lower pH values.
+
+### Did you observe any interesting relationships between the other features \
+(not the main feature(s) of interest)?
+
+I checked the relationship between pH and other acidity variables. The analysis
+shows us that pH is strongly negative correlated with fixed and citric acid 
+variables, whereas it is positively correlated with volatile acidity. I also 
+suspected if there is any corelation between pH and total sulfur dioxide but 
+there is no such evidence.
+
+Also I assessed the relationship between the total and free sulfur dioxide and 
+there seems a strong positive relationship between these 2 variables.
+
+### What was the strongest relationship you found?
+
+The strongest relationship is between the alcohol and the quality of the wine.
+
+# Multivariate Plots Section
+
+
+In this chapter, I will analyze the relationships between muliple variables 
+together in a plot. 
+
+
+## The relationship between Quality, Acidity and Alcohol
+
+
+```{r echo=FALSE, Multivariate_Plots}
+
+RedWineQuality$alcohol.bucket <- cut(RedWineQuality$alcohol,c(8,9.7,10.8,15))
+table(RedWineQuality$alcohol.bucket)
+
+ggplot(aes(y=log10(volatile.acidity+1),x=quality.factor), data=RedWineQuality)+
+  ylim(0.05,0.3) +
+  geom_jitter(aes(color=alcohol.bucket, alpha=0.05))+
+  geom_boxplot(aes(alpha=0.05))+
+  stat_summary(fun.y = mean, geom = "point", shape = 18, 
+               size = 2.5, color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Acidity and Alcohol', y= 'Log Volatile Acidity', 
+       x = 'Quality')
+  
+```
+
+The plot above is created by applying following steps:
+1. Bivariate plot of Volatile Acidity vs Quality is used as a base.
+2. The continuous varible Alcohol is transformed into a categorical variable. In
+order to simplify the visibility and prevent complexity, 3 categories of alcohol
+are created. 
+3. The points are colored according to alcohol categories.
+
+Tt is observed that the alcohol level is increasing and (log of) volatile 
+acidity is decreasing as the quality of wine increases. (Note that the color 
+pattern is changing from red to blue as the quality increases.) 
+
+As a consequence, the volatile acidity and alcohol are changing reversely as the
+quality of wine changes.
+
+
+## The relationship between Quality, Acidity and Total Sulfur Dioxide
+
+
+```{r, echo=FALSE}
+
+RedWineQuality$total.sulfur.dioxide.bucket <- 
+  cut(RedWineQuality$total.sulfur.dioxide,c(6,26,52,289))
+table(RedWineQuality$total.sulfur.dioxide.bucket)
+
+
+ggplot(aes(y=log10(volatile.acidity+1),x=quality.factor), 
+       data=subset(RedWineQuality, !is.na(total.sulfur.dioxide.bucket)))+
+  ylim(0.05,0.3) +
+  geom_jitter(aes(color=total.sulfur.dioxide.bucket, alpha=0.05))+
+  geom_smooth(method='lm',color='red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Acidity and Total Sulfur Dioxide', 
+       y= 'Log Volatile Acidity', x = 'Quality')
+
+
+```
+
+In order to create the above plot, the following steps are followed:
+1. Bivariate plot of Volatile Acidity vs Quality is used as a base.
+2. The continuous varible Total sulfur dioxide is transformed into a categorical
+variable. In order to simplify the visibility and prevent complexity, 3 
+categories of total sulfur dioxide are created. 
+3. The points are colored according to total sulfur dioxide categories.
+
+In the plot above, the patterns of change of total sulfur dioxide and volatile
+acidity according to the quality is analysed.
+
+It is observed that the blue color is becoming rare in small amount as the 
+quality level increases, which is an expected result of weak negative 
+correlation between the qualit and total sulfur dioxide. 
+
+However, there is no change in color pattern in vertical axis. It means that 
+there is no correlation between sulfur dioxide and volatile acidity. This result
+also coincides with the heat map.
+
+
+## The relationship between Quality, Acidity and Chlorides
+
+```{r, echo=FALSE}
+
+RedWineQuality$chlorides.bucket <- 
+  cut(RedWineQuality$chlorides,c(0.01,0.073,0.085, 0.62))
+table(RedWineQuality$chlorides.bucket)
+
+
+ggplot(aes(y=log10(volatile.acidity+1),x=quality.factor), 
+       data=subset(RedWineQuality, !is.na(chlorides.bucket)))+
+  geom_jitter(aes(color=chlorides.bucket, alpha=0.05))+
+  geom_smooth(method='lm',color='red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Acidity and Chlorides', y= 'Log Volatile Acidity', 
+       x = 'Quality')
+
+
+
+```
+
+In order to create the above plot, the following steps are followed:
+1. Bivariate plot of Volatile Acidity vs Quality is used as a base.
+2. The continuous varible Chlorides is transformed into a categorical
+variable. In order to simplify the visibility and prevent complexity, 3 
+categories of total sulfur dioxide are created. 
+3. The points are colored according to Chlorides categories.
+
+There is no visually observable color change in y and x axes. We can conclude 
+that there is not a strong relationship between chlorides and other 2 variables
+quality and volatile acidity. Chlorides level does not change meaningfully with 
+as quality or volatile acidity changes.
+
+
+## Linear model depicting the relationship between Quality, Volatile Acidity, Alcohol, Total Sulfur Dioxide and Chlorides
+
+A linear model is created to formulate the linear relationship between Quality 
+and the explanatory variables of Volatile Acidity, Alcohol, Total Sulfur Dioxide
+and Chlorides.
+
+
+```{r, echo=FALSE}
+
+m1 <- lm(I(quality)~I(log(volatile.acidity)), data=RedWineQuality)
+m2 <- update(m1, ~.+alcohol)
+m3 <- update(m2, ~.+total.sulfur.dioxide)
+m4 <- update(m3, ~.+chlorides)
+mtable(m1,m2,m3,m4)
+
+```
+
+
+quality = 2.207 + -0.671xlog(volatile acidity+1) + 0.295xalcohol + -0.002x
+total sulfur dioxide + -0.305xchlorides
+
+However, when we check the r-squared values, it seems that the linear model is
+far from covering the variance. This model can not be used to predict the 
+quality level of wine with input values of Volatile Acidity, Alcohol, Total 
+Sulfur Dioxide and Chlorides.
+
+
+## The relationship between pH, Fixed Acidity, Volatile Acidity and Citric Acid
+
+```{r, echo=FALSE}
+
+#pH, volatile.acidity, fixed.acidity, citric.acid
+
+RedWineQuality$fixed.acidity.bucket <- 
+  cut(RedWineQuality$fixed.acidity, c(4.5, 7.10,8.32,16))
+summary(RedWineQuality$fixed.acidity.bucket)
+
+RedWineQuality$citric.acid.bucket <- 
+  cut(RedWineQuality$citric.acid, c(-1, 0.09,0.26,0.42,1))
+summary(RedWineQuality$citric.acid.bucket)
+
+ggplot(aes(x=log10(volatile.acidity+1), y= pH), data=RedWineQuality)+
+  ylim(3, 3.5) +
+  xlim(0.1, 0.3) +
+  geom_jitter(aes(shape=factor(fixed.acidity.bucket),color=citric.acid.bucket)) +
+  geom_smooth(method='lm',color='blue') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Volatile Acidity, Fixed Acidity and Citric Acid', 
+       x= 'Log Volatile Acidity', y = 'pH')
+
+```
+
+In order to create the above plot, the following steps are followed:
+1. Bivariate plot of pH and Log of volatile acidity are used as a base.
+2. The continuous varible Fixed acidity and citric acid are transformed into a 
+categorical variables. In each category 3 levels are set.
+3. The points are colored according to citric acid categories.
+4. The shapes of posint are differentiated according to fixed acid categories.
+
+Visual observations depict these findings:
+1. pH is in positive correlation with volatile acidity.
+
+2. Citric acid is in negative correlation with both pH and volatile acidity. 
+Note that the color is changing in both x and y axes:
+   i. Color is transforming from blue and viloet to red and green from left to 
+   right, which means a downward change in citric acid level. 
+   ii. Color is becoming blue and red from viloet and green from down to top, 
+   which also means a decreasing citric acid level as pH increases. 
+
+3. Fixed acidity is in negative correlation with both pH and volatile acidity.
+  i. Note that there are mostly square shapes in the bottom left of the plot.
+  This is where the volatile acidity and pH are both in low levels.
+  ii. The square levels disappear as pH or volatile acidity increases in y 
+  or x axis. There are more triangles in bottom right and upper left corners.
+  iii. The fixed acidity is lowest in the upper right corner where the pH and
+  volatile acidity are both highest.
+
+
+4. Fixed acidity is in positive correlation with citric acid. 
+
+## Linear model depicting the relationship between pH, Volatile Acidity, Fixed Acidity and Citric Acid
+
+A linear model is built to estimate the pH value with 3 other acidity variables 
+given as inputs.
+
+```{r, echo=FALSE}
+
+m1 <- lm(I(pH)~I(log(volatile.acidity+1)), data=RedWineQuality)
+m2 <- update(m1, ~.+fixed.acidity)
+m3 <- update(m2, ~.+citric.acid)
+mtable(m1,m2,m3)
+
+```
+
+pH = 3.764 + -0.01xlog(volatile acidity+1) + -0051xfixed acidity + 
+-0.124xcitric acid.
+
+The r-squared value is 0.479 which is much less than 1 which means that the model
+is far from estimating the pH value with 3 acidity variables as input.
+
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \
+investigation. Were there features that strengthened each other in terms of \
+looking at your feature(s) of interest?
+
+In the "Quality vs Acidity vs Alcohol" plot, I have sketched the change of 
+alcohol value in the samples on the original "Quality vs Volatile Acidity"
+plot. It is displayed that alcohol value does not change with volatile 
+acidity but the color only changes as the quality varies.
+
+A similar relationship is displayed in the following 2 plots of displaying 
+the relationship between quality, volatile acidity, total sulfur dioxide and 
+chlorides. The distributions of Both total sulfur dioxide and chlorides 
+does not change with volatile acidity but it decreases only with quality. 
+
+The last plot is displaying the relationship between pH, volatile acidity,
+fixed acidity and citric acid:
+
+1. There is negative correlation between pH and volatile acidity.
+2. Citric acid decreases with increasing pH and volatile acidity: Blue color
+is disappearing and turning into red.
+3. Fixed acidity decreases as pH and volatile acidity increases: The square 
+shape is transforming into circles and triangles which resembe lower values of 
+fixed acid.
+
+### Were there any interesting or surprising interactions between features?
+
+All of the findings are coinciding with the findings in bivariate analysis.
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the \
+strengths and limitations of your model.
+
+I created 2 linear models:
+
+1. A linear model with inputs log of volatile acidity, alcohol, total sulfur
+dioxide and chlorides, and quality as output.
+
+My linear models has some drawbacks:
+
+- I only took some of the variables included in the dataset to construct the 
+model. For example, I could add the density vaiable also. 
+
+- Other factors which definitely affect the quality of a wine are not included in
+tha dataset. The wineyard, kind of grape, different flavors, bottling process
+may also be important.
+
+- If all other factors are included, the reliability of the model would increase.
+
+2. A linear model with fixed and volatile acidity and citric acid as 
+inputs and pH as output.
+
+- The second model may also require extra variables to be reliable since the 
+r-squared values seem low. 
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+q1 <- qplot(x=total.sulfur.dioxide, data=RedWineQuality, , binwidth = 3) +
+  scale_x_continuous(limits=c(6,150)) +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Total Sulfur Dioxide Histogram', x= 'Total Sulfur Dioxide', 
+       y = 'Count')
+
+q2 <- ggplot(aes(x=total.sulfur.dioxide,y=quality),data=RedWineQuality) +
+  xlim(0,150) +
+  geom_jitter() +
+  geom_smooth(method='lm', color = 'red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Total Sulfur Dioxide', x= 'total sulfur dioxide', 
+       y = 'Quality')
+
+grid.arrange(q1,q2)
+
+```
+
+### Description One
+
+It is an interesting finding that total and free sulfur dioxide which are in
+negative correlation with the quality of the wine have right skewed histograms, 
+in contrat with other variables such as acidity, chlorides and alcohol. 
+
+It means that most of the wine samples have low sulfur dioxide levels and this 
+may not be used as a very strong differentiator for setting quality of wine.
+
+This finding is interesting to see the effect of a variable with right or left 
+skewed histogram on the resultant variable with a normal distribution. 
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+RedWineQuality$alcohol.bucket <- cut(RedWineQuality$alcohol,c(8,9.7,10.8,15))
+table(RedWineQuality$alcohol.bucket)
+
+ggplot(aes(x=log10(volatile.acidity+1),y=quality), data=RedWineQuality)+
+  xlim(0.05,0.3) +
+  geom_jitter(aes(color=alcohol.bucket, alpha=0.05))+
+  geom_smooth(method='lm',color='red') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='Quality vs Acidity and Alcohol', x= 'Log Volatile Acidity', 
+       y = 'Quality')
+  
+
+```
+
+### Description Two
+
+The plot "Quality vs Acidity and Alcohol" provided me expected results. The
+quality increases with alcohol and decreases with acidity.
+
+However, acidity and alcohol are not in a direct relationship. This is expected
+as alcohol and acidity are independent groups of molecules in chemistry where 
+most people think that acidic liquids contains alcohol as people think them 
+bitter.
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+RedWineQuality$fixed.acidity.bucket <- 
+  cut(RedWineQuality$fixed.acidity, c(4.5, 7.10,8.32,16))
+summary(RedWineQuality$fixed.acidity.bucket)
+
+RedWineQuality$citric.acid.bucket <- 
+  cut(RedWineQuality$citric.acid, c(-1, 0.09,0.26,0.42,1))
+summary(RedWineQuality$citric.acid.bucket)
+
+ggplot(aes(x=log10(volatile.acidity+1), y= pH), data=RedWineQuality)+
+  ylim(3, 3.5) +
+  xlim(0.1, 0.3) +
+  geom_jitter(aes(shape=factor(fixed.acidity.bucket),color=citric.acid.bucket)) +
+  geom_smooth(method='lm',color='blue') +
+  theme(text=element_text(size=10), plot.title=
+          element_text(size=12, face='bold',hjust = 0.5)) +
+  labs(title='pH vs Volatile Acidity, Fixed Acidity and Citric Acid', 
+       x= 'Log Volatile Acidity', y = 'pH')
+
+
+```
+
+### Description Three
+
+This plot explains the relationship between different variables and the pH value
+of the wine. pH value is positively correlated with volatile and citric acid but
+in negative correlation with fixed acidity. Also, I observed the negative 
+correlation between the fixed and volatile acidity. 
+
+This plot provided me to see the effects of 3 explanatory variables on pH as 
+the resultant variable.
+
+However, the quality of wine is not strongly correlated with pH value but in 
+stronger correlation with volatile acidity. Therefore. I used volatile acidity
+to emphasize the relationship between acidity and quality.
+
+
+------
+
+# Reflection
+
+> **Tip**: Here's the final step! Reflect on the exploration you performed and
+the insights you found. What were some of the struggles that you went through?
+What went well? What was surprising? Make sure you include an insight into
+future work that could be done with the dataset.
